@@ -39,7 +39,7 @@ def producer(testing,access_token=None):
 def csvWorker(directory,testing): # should be on a separate process
     dotenv.load_dotenv()
     r = redis.Redis(host="localhost",port="6379",db=0)
-    stonksList = json.loads(os.getenv("STOCKS"))["TEST"] if testing else json.reads(os.readenv("STOCKS"))["REAL"]
+    stonksList = json.loads(os.getenv("STOCKS"))["TEST"] if testing else json.loads(os.getenv("STOCKS"))["REAL"]
     worker = Save.csv(directory,testing)
     stonks = {stonk.split('-')[0]:'$' for stonk in stonksList}
     worker.initialise()

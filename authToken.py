@@ -110,7 +110,7 @@ class Login():
             phno = drive.find_element(By.XPATH,'/html/body/section[1]/div[3]/div[3]/form/div[1]/div/input')
             drive.uc_click('/html/body/section[1]/div[3]/div[3]/form/div[1]/div/input',By.XPATH)
             #sending phone number details
-            phno.send_keys('7013036199')
+            phno.send_keys(self.phoneno)
 
             #click continue 
             drive.uc_click('/html/body/section[1]/div[3]/div[3]/form/button',By.XPATH)
