@@ -1,6 +1,6 @@
 .env 
-./data/
-./averages/
+data/
+averages/
 #testing
 ./test.ipynb
 ./test2.ipynb
