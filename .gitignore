@@ -1,6 +1,6 @@
-#secrets
-secrets.env
-
+.env 
+./data/
+./averages/
 #testing
 ./test.ipynb
 ./test2.ipynb

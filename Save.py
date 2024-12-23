@@ -15,7 +15,7 @@ class Format():
     def __init__(self,directory:str,testing:bool) -> None:
         
         self.dir = directory # to know where we have to save our shit
-        self.save_loc = None
+        self.initialised = False
 
         dotenv.load_dotenv()
         self.stonks = json.loads(os.getenv("STOCKS"))["TEST"] if testing else json.loads(os.getenv("STOCKS"))["REAL"]
@@ -23,6 +23,7 @@ class Format():
 
 
     def initialise(self):
+        self.save_loc=True
         #abstract 
         # creates files if not already made 
         pass
@@ -69,11 +70,12 @@ class csv(Format):
         """
         create individual csv files for each stock for said day
         """
+        super().initialise()
         for stonk in self.stonks:
             #check if directories exist
             market,symbol = stonk.split('-')[0].split(':')
             directory = os.path.join(self.dir,market,symbol)
-            self.save_loc = directory
+
             if not os.path.exists(directory): #checking to see if file path exists
                 try:                                            # we had to include this try block again due to issues in multiprocessing
                     os.makedirs(directory)           #we will make the file path if it doesnt :)
@@ -94,18 +96,20 @@ class csv(Format):
         
         parses message data and saves it to the right csv file
         """
-        if self.save_loc==None:
+        if self.save_loc==False:
             self.initialise()
+            self.save_loc = True
 
         india_epoch = (dt.datetime.now(dt.UTC) + dt.timedelta(hours=5.5)).timestamp()
         if 'symbol' not in message.keys(): # a message without data
             return
        
     
-        file_symbol = ''.join(['-' if x == ":" else x for x in message.pop('symbol')])
+        market,symbol = message['symbol'].split('-')[0].split(':')
+        directory = os.path.join(self.dir,market,symbol)
         data_type = "symbol" if message['type'] =='sf' else "depth"
 
-        file_path = os.path.join(self.save_loc,f'{data_type}-{self.india_date}.csv')
+        file_path = os.path.join(directory,f'{data_type}-{self.india_date}.csv')
         #file_path = f'{self.dir}/{file_symbol}/{self.data_type[:4]}-{self.india_date}.csv'
         # appending data to our file as a line
         with open(file_path,'a+') as f:
