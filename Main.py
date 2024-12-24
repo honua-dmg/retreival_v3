@@ -14,9 +14,9 @@ import threading
 import logging
 
 
-def producer(testing,access_token=None):
+def producer(testing,access_token=None,client=0):
     if access_token==None:
-        token = authToken.AutoLogin('test').get_access_token()
+        token = authToken.AutoLogin(client).get_access_token()
     else:
         token = access_token
     r = redis.Redis(host="localhost",port="6379",db=0)
@@ -44,7 +44,7 @@ def csvWorker(directory,testing): # should be on a separate process
     stonks = {stonk.split('-')[0]:'$' for stonk in stonksList}
     worker.initialise()
     while r.get('end')!='true':
-        messages = r.xread(stonks,block=0)
+        messages = r.xread(stonks,block=100)
         if messages == []:
             continue
         print(messages)
@@ -63,10 +63,11 @@ def avgParserWorker(directory,testing):
     dotenv.load_dotenv()
     r = redis.Redis(host="localhost",port="6379",db=0)
     t = redis.Redis(host="localhost",port="6379",db=1)
+    
     stonksList = json.loads(os.getenv("STOCKS"))["TEST"] if testing else json.loads(os.getenv("STOCKS"))["REAL"]
     stonks = {stonk.split('-')[0]:'$' for stonk in stonksList}
     while r.get('end')!='true':
-        data = r.xread(stonks,block=0)
+        data = r.xread(stonks,block=100)
         for stream in data:
             for uncoded_msg in stream[1]:
                 msg = {key.decode('utf-8'): value.decode('utf-8') for key, value in uncoded_msg[1].items()} # decoding message
@@ -77,6 +78,7 @@ def avgParserWorker(directory,testing):
     t.flushdb()
 
 def endDay(testing): # clears cache. 
+    dotenv.load_dotenv()
     stonksList = json.loads(os.getenv("STOCKS"))["TEST"] if testing else json.loads(os.getenv("STOCKS"))["REAL"]
     r = redis.Redis(host="localhost",port="6379",db=0)
     for stonk in stonksList:

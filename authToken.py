@@ -14,34 +14,7 @@ import os
 import json
 import dotenv
 
-def get_creds(file_loc,data_type):
-    """ 
-    returns credentials stored in the specified file_loc
-    args:
-        file_loc: location of file
-        data_type: (specified in secrets.txt)
 
-        format in secrets.txt:
-        data_type:
-        TOTPseckey = ... ,
-        key = ... ,
-        phoneno = ... ,
-        client_id = ... ,
-        secret_key = ... ,
-        redirect_uri = ... ,
-    """
-    creds = {}
-    with open(file_loc,'r') as f:
-        txt = f.readlines()
-        for i in range(len(txt)):
-            if data_type in txt[i]:
-                creds['TOTPseckey'] = txt[i+1].split('=')[1].strip("\n,")
-                creds['key'] = txt[i+2].split('=')[1].strip("\n,")
-                creds['phoneno'] = txt[i+3].split('=')[1].strip("\n,")
-                creds['client_id'] = txt[i+4].split('=')[1].strip("\n,")
-                creds['secret_key'] = txt[i+5].split('=')[1].strip("\n,")
-                creds['redirect_uri'] = txt[i+6].split('=')[1].strip("\n,")  
-    return creds
 
 # question to ponder: is making a separate class for this really necessary?
 class Login():
@@ -186,8 +159,9 @@ class Login():
 
 # autologin by saving data in secrets.txt file
 class AutoLogin(Login):
-    def __init__(self,data_type:str):
-        creds = json.loads(os.getenv(data_type.upper()))
+    def __init__(self,client:str):
+        dotenv.load_dotenv()
+        creds = json.loads(os.getenv(client))
         super().__init__(client_id=creds['client_id'],
                          secret_key=creds['secret_key'],
                          redirect_uri=creds['redirect_uri'],
