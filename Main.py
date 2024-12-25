@@ -145,7 +145,7 @@ def SignalFinder(msg,avg_r,polariser):
     below, above  = keys[:keys.index(current_ltp)],keys[keys.index(current_ltp):]
 
     india_date=dt.datetime.strftime(dt.datetime.now(dt.UTC) + dt.timedelta(hours=5.5),"%Y-%m-%d")
-    with open('./messages/{}-{}'.format(msg['stonk'].split('-')[0],india_date),'a') as f:
+    with open('./messages/{}-{}.txt'.format(msg['stonk'].split('-')[0],india_date),'a') as f:
         print(f"\n\n\n{current_ltp} ::{traded_time}:: {len(keys)}, len below, above: {len(below)}, {len(above)}, {total_buy_qty}, {count}, {avg_qty} \below:{[polariser[x] for x in below]}, above:{[polariser[x] for x in above]}",file=f)  
         # potential short signal : len(above)<20 and most of them are 0s and below>20 and most of them are reds
         if len(below)>decision_range:
