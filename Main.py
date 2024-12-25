@@ -49,7 +49,8 @@ def csvWorker(directory,testing): # should be on a separate process
     worker = Save.csv(directory,testing)
     stonks = {stonk.split('-')[0]:'$' for stonk in stonksList}
     worker.initialise()
-    while r.get('end')!='true':
+
+    while r.get('end')!=b'true': # continuosly reading the incoming stream of data.
         messages = r.xread(stonks,block=100)
         if messages == []:
             continue
@@ -73,7 +74,8 @@ def avgParserWorker(directory,testing):
     
     stonksList = json.loads(os.getenv("STOCKS"))["TEST"] if testing else json.loads(os.getenv("STOCKS"))["REAL"]
     stonks = {stonk.split('-')[0]:'$' for stonk in stonksList}
-    while r.get('end')!='true': # continuosly reading the incoming stream of data.
+
+    while r.get('end')!=b'true': # continuosly reading the incoming stream of data.
         data = r.xread(stonks,block=100)
         for stream in data:
             for uncoded_msg in stream[1]:
@@ -82,7 +84,7 @@ def avgParserWorker(directory,testing):
 
                 # saving the file to csv
                 avgParser.to_csv(parsed_msg,directory)
-
+   
     t.flushdb()
 
 def SignalWorker(testing):
@@ -93,7 +95,8 @@ def SignalWorker(testing):
     avg_r = redis.Redis(host="localhost",port="6379",db=2)
     stonksList = json.loads(os.getenv("STOCKS"))["TEST"] if testing else json.loads(os.getenv("STOCKS"))["REAL"]
     stonks = {stonk.split('-')[0]:'$' for stonk in stonksList}
-    while r.get('end')!='true': # continuosly reading the incoming stream of data.
+
+    while r.get('end')!=b'true': # continuosly reading the incoming stream of data.
         data = r.xread(stonks,block=100)
         for stream in data:
             for uncoded_msg in stream[1]:
