@@ -150,6 +150,7 @@ class Login():
         print(response['code'])
         if response['s']=='ok':
             self.access_token = response['access_token']
+            
             print('*'*80)
             print('success')
             return self.access_token
@@ -159,7 +160,7 @@ class Login():
 
 # autologin by saving data in secrets.txt file
 class AutoLogin(Login):
-    def __init__(self,client:str):
+    def __init__(self,client='0'):
         dotenv.load_dotenv()
         creds = json.loads(os.getenv(client))
         super().__init__(client_id=creds['client_id'],

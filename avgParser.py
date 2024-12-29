@@ -80,7 +80,7 @@ def parseMsg(r,message): # r stands for the redis client
             r.set(f'{file_symbol}-vol_traded_today',message['vol_traded_today']) 
             return None
 
-        delta_vol = int(message['vol_traded_today'])-int(last_traded_vol)
+        delta_vol = int(float(message['vol_traded_today']))-int(float(last_traded_vol))
 
         if delta_vol ==0:
             #print('no delta vol')
